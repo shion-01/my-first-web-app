@@ -1,23 +1,217 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>プログラマーまでのロードマップ</title>
+    <style>
+        /* ==================================== */
+        /* CSSセクション: 見た目とデザインの設定 */
+        /* ==================================== */
+
+        /* ページの基本的な設定（背景、フォント、中央寄せ） */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f9fc; /* 落ち着いた明るい背景色 */
+            background-image: linear-gradient(135deg, #f7f9fc 0%, #e0e5ec 100%); /* ノートのようなグラデーション */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center; /* コンテンツを中央に配置 */
+            min-height: 100vh;
+        }
+
+        /* チェックリスト全体を囲むコンテナ */
+        .roadmap-container {
+            width: 100%;
+            max-width: 600px; /* 最大幅を設定し、見やすくする */
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-left: 10px solid #2980b9; /* ロードマップらしい青いアクセント */
+        }
+
+        /* メインタイトル */
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #2980b9;
+            padding-bottom: 10px;
+        }
+        
+        /* セクションタイトル */
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        
+        /* チェックリストの項目（タスク）のスタイル */
+        .task-item {
+            display: flex;
+            align-items: flex-start; /* チェックボックスとテキストの上端を揃える */
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            border-left: 5px solid transparent;
+        }
+        
+        .task-item:hover {
+            background-color: #f0f4f8;
+        }
+        
+        /* チェックボックスのカスタムデザイン */
+        .task-item input[type="checkbox"] {
+            margin-right: 15px;
+            min-width: 20px;
+            height: 20px;
+            cursor: pointer;
+            appearance: none; /* デフォルトのチェックボックスの見た目を消す */
+            border: 2px solid #95a5a6;
+            border-radius: 4px;
+            position: relative;
+            outline: none;
+            flex-shrink: 0; /* チェックボックスの幅を固定 */
+        }
+
+        .task-item input[type="checkbox"]:checked {
+            border-color: #27ae60; /* チェック時の色を緑に */
+            background-color: #27ae60;
+        }
+
+        .task-item input[type="checkbox"]:checked::after {
+            content: '✅'; /* チェックマークの絵文字 */
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-item label {
+            flex-grow: 1; /* ラベルが残りのスペースを全て占める */
+            font-size: 1.1em;
+            line-height: 1.5;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+
+        /* チェック済みのタスクのスタイル（薄い色、打ち消し線） */
+        .task-item input[type="checkbox"]:checked + label {
+            color: #95a5a6;
+            text-decoration: line-through;
+        }
+    </style>
 </head>
 <body>
-    <h1>転職までの目標</h1>
-    <h2>小目標ごとのロードマップ</h2>
+
+    <div class="roadmap-container">
+        <h1>🎓 転職までの目標</h1>
+        <h2>小目標ごとのロードマップ</h2>
         <p>小目標は追加OK</p>
-    <h3><input type="checkbox" id="agree" name="agree" value="yes"></h3>
-    <label for="agree">プロゲートの初めての開発をやってみよう</label>
-    <h4><input type="checkbox" id="agree" name="agree" value="yes">Webページを更新しようまで完了</h4>
-    <label for="agree">Webページを更新しようまで完了</label>
-    <h4><input type="checkbox" id="agree" name="agree" value="yes">Jabascriptの基本を学ぼうまで完了</h4>
-    <label for="agree">Jabascriptの基本を学ぼうまで完了</label>
-    <h4><input type="checkbox" id="agree" name="agree" value="yes">クラスとモジュールを学ぼうまで完了</h4>
-    <label for="agree">クラスとモジュールを学ぼうまで完了</label>
-    <h4><input type="checkbox" id="agree" name="agree" value="yes">JSONの読み書きをするAPIを実装しようまで完了</h4>
-    <label for="agree">JSONの読み書きをするAPIを実装しようまで完了</label>
+        
+        <div id="checklist">
+            </div>
+
+    </div>
+
+    <script>
+        // ====================================
+        // JavaScriptセクション: 機能の設定 (状態保存)
+        // ====================================
+
+        // HTML要素の取得
+        const checklistElement = document.getElementById('checklist');
+        
+        // データの保存/読み込みに使う名前
+        const STORAGE_KEY = 'programmerRoadmapState';
+
+        // 📝 あなたの作成したタスクリスト
+        // 注: H3/H4タグではなく、リストとして簡潔にしました
+        const tasks = [
+            "プロゲートの初めての開発をやってみよう",
+            "Webページを更新しようまで完了",
+            "Jabascriptの基本を学ぼうまで完了",
+            "クラスとモジュールを学ぼうまで完了",
+            "JSONの読み書きをするAPIを実装しようまで完了"
+        ];
+
+        /**
+         * 1. タスクリストをHTMLとして生成する関数
+         * @param {Array<boolean>} taskStates - 各タスクのチェック状態（true/false）の配列
+         */
+        function renderChecklist(taskStates) {
+            checklistElement.innerHTML = ''; // 一度リストを空にする
+            tasks.forEach((task, index) => {
+                const isChecked = taskStates[index] || false; // 状態がなければ未チェック
+                
+                const taskItem = document.createElement('div');
+                taskItem.classList.add('task-item'); // CSSでデザインするためのクラス
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                // 📝 複数のチェックボックスには、必ず固有のIDを付ける必要があります！
+                checkbox.id = `task-${index}`; 
+                checkbox.checked = isChecked;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `task-${index}`;
+                label.textContent = task;
+                
+                // 要素を組み合わせて、HTMLに追加
+                taskItem.appendChild(checkbox);
+                taskItem.appendChild(label);
+                checklistElement.appendChild(taskItem);
+            });
+        }
+
+        /**
+         * 2. チェックボックスの状態をブラウザに保存する関数
+         * (localStorageを使用)
+         */
+        function saveState() {
+            const checkboxes = checklistElement.querySelectorAll('input[type="checkbox"]');
+            // 全てのチェックボックスの状態(checked)を取り出し、配列にして保存
+            const taskStates = Array.from(checkboxes).map(cb => cb.checked);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(taskStates));
+        }
+
+        /**
+         * 3. ブラウザに保存されている状態を読み込む関数
+         */
+        function loadState() {
+            const savedState = localStorage.getItem(STORAGE_KEY);
+            if (savedState) {
+                // 文字列として保存されているデータを配列に戻す
+                return JSON.parse(savedState);
+            }
+            // 保存データがなければ、全タスクを未チェック(false)にする
+            return tasks.map(() => false);
+        }
+
+        /**
+         * 4. ページ読み込み時に実行される初期化処理
+         */
+        function init() {
+            const initialStates = loadState(); // 以前の状態を読み込む
+            renderChecklist(initialStates); // 読み込んだ状態でリストを画面に表示
+
+            // チェックボックスがクリックされたら、状態を保存する処理
+            checklistElement.addEventListener('change', (event) => {
+                if (event.target.type === 'checkbox') {
+                    saveState();
+                }
+            });
+        }
+
+        // ページが完全に読み込まれたらinit()関数を実行
+        init();
+
+    </script>
 </body>
 </html>
